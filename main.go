@@ -14,8 +14,6 @@ import (
   "go.mongodb.org/mongo-driver/mongo/options"
 
   /* webserver */
-  // "http"
-  // "json"
   "net/http"
   "io/ioutil"
 )
@@ -23,22 +21,26 @@ import (
 /* load configs from config.yml */
 type ConfigStruct struct {
   Mongo struct {
-    Port        string `yaml:"port"`
-    Host        string `yaml:"host"`
-    User        string `yaml:"dbuser"`
-    Password    string `yaml:"dbpassword"`
-    Database    string `yaml:"dbname"`
-    Extra       string `yaml:"extra"`
+    // Port        string `yaml:"port"`
+    // Host        string `yaml:"host"`
+    // User        string `yaml:"dbuser"`
+    // Password    string `yaml:"dbpassword"`
+    // Database    string `yaml:"dbname"`
+    // Extra       string `yaml:"extra"`
     URI         string `yaml:"uri"`
   } `yaml:"mongo"`
 
   SourceHeader  string `yaml:"source_header"`
   Sources     []string `yaml:"sources"`
   DefaultSource string `yaml:"default_source"`
+
+  Debug bool `yaml:"debug"`
 }
+var debug bool = false;
 var cfg ConfigStruct
 func load_cfg() {
   cleanenv.ReadConfig("config.yml", &cfg)
+  debug = cfg.Debug
 }
 
 /* connect to db */
@@ -66,8 +68,8 @@ func db_init(uri string) {
 }
 
 func post_to_db(collection string, content string) {
-  fmt.Println("Collection:", collection)
-  fmt.Println("Content:", content)
+  output("Collection:", collection)
+  output("Content:", content)
 }
 
 /* web server */
@@ -89,19 +91,22 @@ func form_handler(w http.ResponseWriter, r *http.Request) {
   post_to_db(collection, content)
 }
 
+/* orchestrate */
 func main() {
-  fmt.Println("Loading config...")
   load_cfg()
 
-  fmt.Println("Connecting to mongoDB...")
+  output("Connecting to mongoDB...")
   db_init(cfg.Mongo.URI)
 
-  fmt.Println("Registering form func...")
+  output("Registering form func...")
   http.HandleFunc("/tracelog", form_handler)
 
-  fmt.Println("Starting server...")
+  output("Starting server...")
   if err := http.ListenAndServe(":8080", nil); err != nil {
     log.Fatal(err)
   }
 }
 
+func output(contents ...string) {
+  if (debug) { fmt.Println(contents) }
+}
