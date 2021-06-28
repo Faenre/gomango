@@ -1,0 +1,15 @@
+debug: true
+
+mongo:
+  uri: "mongodb+srv://..."
+  # host: "cluster0.rd1et.mongodb.net"
+  # port: "80"
+  # dbuser: "teamtextrix"
+  # dbpassword: "textrix_r0x"
+  # dbname: "dbname"
+  # extra: "?retryWrites=true&w=majority"
+
+source_header: "Tracer_source"
+default_source: "unknown_source"
+sources:
+  - "unknown_source"
