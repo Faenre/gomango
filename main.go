@@ -1,18 +1,19 @@
 package main
 
 import (
-  // debug
-  "fmt"
+  /* debug */
+  // "fmt"
+  "log"
 
-  // config
+  /* config */
   "github.com/ilyakaznacheev/cleanenv"
 
-  // mongo
+  /* mongo */
   "context"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 
-  // http
+  /* webserver */
 )
 
 type ConfigStruct struct {
@@ -44,25 +45,17 @@ func db_init(uri string) {
 
   client, err := mongo.Connect(ctx, clientOptions)
   if err != nil {
-    fmt.Println("error 1")
-    panic(err)
-    // log.Fatal(err)
+    log.Fatal(err)
   }
 
   err = client.Ping(ctx, nil)
   if err != nil {
-    fmt.Println("error 2")
-    panic(err)
-    // log.Fatal(err)
+    log.Fatal(err)
   }
-
-  fmt.Println("here")
 
   collection = client.Database("tracing").Collection("logs")
   for _, source := range(cfg.Sources) {
     collections[source] = client.Database("tracing").Collection(source)
-    fmt.Println(source, "loaded")
-    fmt.Println(collections[source])
   }
 }
 
