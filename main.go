@@ -1,12 +1,18 @@
 package main
 
 import (
+  // debug
   "fmt"
+
+  // config
   "github.com/ilyakaznacheev/cleanenv"
 
+  // mongo
   "context"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
+
+  // http
 )
 
 type ConfigStruct struct {
@@ -25,12 +31,8 @@ type ConfigStruct struct {
 }
 var cfg ConfigStruct
 
-func get_uri() string {
-  err := cleanenv.ReadConfig("config.yml", &cfg)
-  if err != nil {
-    panic(err)
-  }
-  return cfg.Mongo.URI
+func load_cfg() {
+  cleanenv.ReadConfig("config.yml", &cfg)
 }
 
 var collection *mongo.Collection
@@ -60,10 +62,11 @@ func db_init(uri string) {
   for _, source := range(cfg.Sources) {
     collections[source] = client.Database("tracing").Collection(source)
     fmt.Println(source, "loaded")
+    fmt.Println(collections[source])
   }
 }
 
 func main() {
-  get_uri()
+  load_cfg()
   db_init(cfg.Mongo.URI)
 }
