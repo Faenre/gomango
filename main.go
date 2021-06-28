@@ -66,13 +66,15 @@ func db_init(uri string) {
 }
 
 func post_to_db(collection string, content string) {
-  // todo
+  fmt.Println("Collection:", collection)
+  fmt.Println("Content:", content)
 }
 
 /* web server */
 func get_source_from_headers(r *http.Request) string {
   header := r.Header[cfg.SourceHeader]
   if header == nil { return cfg.DefaultSource }
+
   return header[0]
 }
 
@@ -88,6 +90,18 @@ func form_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+  fmt.Println("Loading config...")
   load_cfg()
+
+  fmt.Println("Connecting to mongoDB...")
   db_init(cfg.Mongo.URI)
+
+  fmt.Println("Registering form func...")
+  http.HandleFunc("/tracelog", form_handler)
+
+  fmt.Println("Starting server...")
+  if err := http.ListenAndServe(":8080", nil); err != nil {
+    log.Fatal(err)
+  }
 }
+
