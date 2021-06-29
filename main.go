@@ -18,6 +18,12 @@ import (
   "io/ioutil"
 )
 
+type TraceData struct {
+  Headers map[string][]string
+  Collection string
+  Content string
+}
+
 /* load configs from config.yml */
 type ConfigStruct struct {
   Mongo struct {
@@ -67,28 +73,49 @@ func db_init(uri string) {
   }
 }
 
-func post_to_db(collection string, content string) {
-  output("Collection:", collection)
-  output("Content:", content)
+func post_to_db(collection *mongo.Collection, td TraceData) {
+  // collection, ok := collections[collectionName]
+
+  if _, err := collection.InsertOne(context.TODO(), td); err != nil {
+    output("Error writing!")
+  } else {
+    output("Write success, into:", td.Collection)
+  }
 }
 
 /* web server */
-func get_source_from_headers(r *http.Request) string {
-  header := r.Header[cfg.SourceHeader]
-  if header == nil { return cfg.DefaultSource }
+func get_source_from_headers(headers map[string][]string) string {
+  header := headers[cfg.SourceHeader]
+  if headers == nil { return cfg.DefaultSource }
 
-  return header[0]
+  source := header[0]
+  _, ok := collections[source]
+  if !ok { return cfg.DefaultSource }
+
+  return source
 }
 
 func form_handler(w http.ResponseWriter, r *http.Request) {
   if err := r.ParseForm(); err != nil { return }
+  headers := headers_to_map(r.Header)
 
-  collection := get_source_from_headers(r)
+  collectionName := get_source_from_headers(headers)
+  collection := collections[collectionName]
 
   buf, _ := ioutil.ReadAll(r.Body)
   content := fmt.Sprintf("%q", buf[:])
 
-  post_to_db(collection, content)
+  td := TraceData{headers, collectionName, content}
+
+  post_to_db(collection, td)
+}
+
+func headers_to_map(headers http.Header) map[string][]string {
+  m := make(map[string][]string)
+  for h, va := range(headers) {
+    for _, v := range(va) { m[h] = append(m[h], v) }
+  }
+  return m
 }
 
 /* orchestrate */
