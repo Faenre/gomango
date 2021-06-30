@@ -146,10 +146,10 @@ func main() {
   output("Registering form func...")
   http.HandleFunc("/tracelog", form_handler)
 
-  output("Now listening on:", cfg.HTTPPort)
-  if err := http.ListenAndServe(cfg.HTTPPort, nil); err != nil {
-    log.Fatal(err)
-  }
+  // output("Now listening on:", cfg.HTTPPort)
+  // if err := http.ListenAndServe(cfg.HTTPPort, nil); err != nil {
+  //   log.Fatal(err)
+  // }
   output("Now listening on:", cfg.HTTPSPort)
   if err := http.ListenAndServeTLS(cfg.HTTPSPort, cfg.FullCert, cfg.PrivateKey, nil); err != nil {
     log.Fatal(err)
