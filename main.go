@@ -18,6 +18,10 @@ import (
   "io/ioutil"
 )
 
+func output(contents ...string) {
+  if (debug) { fmt.Println(contents) }
+}
+
 type TraceData struct {
   Headers map[string][]string
   Collection string
@@ -33,14 +37,15 @@ type ConfigStruct struct {
     // Password    string `yaml:"dbpassword"`
     // Database    string `yaml:"dbname"`
     // Extra       string `yaml:"extra"`
-    URI         string `yaml:"uri"`
+    URI         string  `yaml:"uri"`
   } `yaml:"mongo"`
 
-  SourceHeader  string `yaml:"source_header"`
-  Sources     []string `yaml:"sources"`
-  DefaultSource string `yaml:"default_source"`
+  SourceHeader  string  `yaml:"source_header"`
+  Sources     []string  `yaml:"sources"`
+  DefaultSource string  `yaml:"default_source"`
 
-  Debug bool `yaml:"debug"`
+  Debug         bool    `yaml:"debug"`
+  Port          string  `yaml:"port"`
 }
 var debug bool = false;
 var cfg ConfigStruct
@@ -74,8 +79,6 @@ func db_init(uri string) {
 }
 
 func post_to_db(collection *mongo.Collection, td TraceData) {
-  // collection, ok := collections[collectionName]
-
   if _, err := collection.InsertOne(context.TODO(), td); err != nil {
     output("Error writing!")
   } else {
@@ -129,11 +132,7 @@ func main() {
   http.HandleFunc("/tracelog", form_handler)
 
   output("Starting server...")
-  if err := http.ListenAndServe(":8080", nil); err != nil {
+  if err := http.ListenAndServe(cfg.Port, nil); err != nil {
     log.Fatal(err)
   }
-}
-
-func output(contents ...string) {
-  if (debug) { fmt.Println(contents) }
 }

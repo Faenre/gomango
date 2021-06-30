@@ -1,4 +1,5 @@
 debug: true
+port: ":8080"
 
 mongo:
   uri: "mongodb+srv://..."
