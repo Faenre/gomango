@@ -120,7 +120,7 @@ func form_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func enableCors(w *http.ResponseWriter) {
-  allowedHeaders := "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization,X-CSRF-Token, Tracer-Source"
+  allowedHeaders := "*" // "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization,X-CSRF-Token, Tracer-Source"
   (*w).Header().Set("Access-Control-Allow-Origin", "*")
   (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
   (*w).Header().Set("Access-Control-Allow-Headers", allowedHeaders)
