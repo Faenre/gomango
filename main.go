@@ -94,6 +94,7 @@ func post_to_db(collection *mongo.Collection, td TraceData) {
 func get_source_from_headers(headers map[string][]string) string {
   header := headers[cfg.SourceHeader]
   if headers == nil { return cfg.DefaultSource }
+  if len(headers) == 0 { return cfg.DefaultSource }
 
   source := header[0]
   _, ok := collections[source]
