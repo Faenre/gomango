@@ -46,6 +46,9 @@ type ConfigStruct struct {
 
   Debug         bool    `yaml:"debug"`
   Port          string  `yaml:"port"`
+
+  FullCert      string  `yaml:"fullcert"`
+  PrivateKey    string  `yaml:"privatekey"`
 }
 var debug bool = false;
 var cfg ConfigStruct
@@ -143,7 +146,8 @@ func main() {
   http.HandleFunc("/tracelog", form_handler)
 
   output("Starting server...")
-  if err := http.ListenAndServe(cfg.Port, nil); err != nil {
+  // if err := http.ListenAndServe(cfg.Port, nil); err != nil {
+  if err := http.ListenAndServeTLS(cfg.Port, cfg.FullCert, cfg.PrivateKey, nil); err != nil {
     log.Fatal(err)
   }
 }
