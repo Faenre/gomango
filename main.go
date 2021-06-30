@@ -100,6 +100,9 @@ func get_source_from_headers(headers map[string][]string) string {
 
 func form_handler(w http.ResponseWriter, r *http.Request) {
   if err := r.ParseForm(); err != nil { return }
+
+  enableCors(&w)
+
   headers := headers_to_map(r.Header)
 
   collectionName := get_source_from_headers(headers)
@@ -111,6 +114,10 @@ func form_handler(w http.ResponseWriter, r *http.Request) {
   td := TraceData{headers, collectionName, content}
 
   post_to_db(collection, td)
+}
+
+func enableCors(w *http.ResponseWriter) {
+    (*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 func headers_to_map(headers http.Header) map[string][]string {
