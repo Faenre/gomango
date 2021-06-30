@@ -1,6 +1,6 @@
 # Go-Man-Go
 
-A small server that opens a simple web listener to a mongodb 
+A small server that opens a simple web listener to a mongodb instance
 
 ## Installation
 
@@ -11,4 +11,4 @@ A small server that opens a simple web listener to a mongodb
 ## Usage
 
 - Send traffic (GET, POST, ...) to the server, using the port specified in the config file
-- The message headers are copied, and the content is dumped as a raw string into the db
+- The message headers are copied, and the content is dumped as a raw string into a mongodb field
